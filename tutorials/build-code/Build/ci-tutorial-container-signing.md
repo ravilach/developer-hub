@@ -63,23 +63,23 @@ Make sure the `cosign.key`, `cosign.pub` are excluded from your SCM. In other wo
 
 1. Navigate to __Project Setup__, and then select  __Secrets__.
 
-![Project Secrets](static/ci-tutorial-container-signing/fruits_api_secrets_list_0.png)
+![Project Secrets](../static/ci-tutorial-container-signing/fruits_api_secrets_list_0.png)
 
 2. Select __+ New Secret__ , and then select __Text__.
 
-![New Text Secret](static/ci-tutorial-container-signing/new_text_secret_cosign_password.png)
+![New Text Secret](../static/ci-tutorial-container-signing/new_text_secret_cosign_password.png)
 
 3. Set the __Secret Name__ to be `cosign_password`, and then fill your cosign private key password `$COSIGN_PASSSWORD` as __Secret Value__.
 
-![Cosign Password](static/ci-tutorial-container-signing/secret_cosign_password.png)
+![Cosign Password](../static/ci-tutorial-container-signing/secret_cosign_password.png)
 
 4. Select __+ New Secret__, and then select __File__.
 
-![New File Secret](static/ci-tutorial-container-signing/new_file_secret.png)
+![New File Secret](../static/ci-tutorial-container-signing/new_file_secret.png)
 
 5. Fill the details for the secret `cosign_private_key` as shown.
 
-![Cosign Private Key Secret](static/ci-tutorial-container-signing/file_secret_cosign_private_key.png)
+![Cosign Private Key Secret](../static/ci-tutorial-container-signing/file_secret_cosign_private_key.png)
 
 6. For the __Select File__, browse and pick the `cosign.key` from the `$TUTORIAL_HOME`.
 
@@ -87,11 +87,11 @@ Make sure the `cosign.key`, `cosign.pub` are excluded from your SCM. In other wo
 
 8. Fill the details for the secret `cosign_public_key` as shown.
 
-![Cosign Public Key Secret](static/ci-tutorial-container-signing/file_secret_cosign_public_key.png)
+![Cosign Public Key Secret](../static/ci-tutorial-container-signing/file_secret_cosign_public_key.png)
 
 With this we now have four secrets in our project:
 
-![Project Secrets](static/ci-tutorial-container-signing/fruits_api_secrets_list_2.png)
+![Project Secrets](../static/ci-tutorial-container-signing/fruits_api_secrets_list_2.png)
 
 ## Update the pipeline to sign the container Image
 
@@ -101,11 +101,11 @@ Now, update the existing __build and push__ step of our `Build Go` pipeline to s
 
 1. Navigate to __Projects__, and then  __Pipelines__.
 
-![Pipelines List](static/ci-tutorial-go-containers/project_pipelines.png)
+![Pipelines List](../static/ci-tutorial-go-containers/project_pipelines.png)
 
 2. Select __Build Go__ pipeline to open the pipeline editor.
 
-![Build Go Pipeline](static/ci-tutorial-go-containers/select_build_go_pipeline_2.png)
+![Build Go Pipeline](../static/ci-tutorial-go-containers/select_build_go_pipeline_2.png)
 
 3. Select the step __build and push__ and update the __Command__ to be as shown:
 
@@ -117,7 +117,7 @@ IMAGE_REF=$(ko build --bare --platform linux/amd64 --platform linux/arm64 .)
 cosign sign --key env://COSIGN_PRIVATE_KEY $IMAGE_REF
 ```
 
-![Build and Push Step](static/ci-tutorial-container-signing/go_pipeline_step_build_push.png)
+![Build and Push Step](../static/ci-tutorial-container-signing/go_pipeline_step_build_push.png)
 
 We also need to configure few environment variables that are required by `ko` and `cosign` to build and push the signed image to `fruits-api` container repository.
 
@@ -131,7 +131,7 @@ COSIGN_PRIVATE_KEY: <+secrets.getValue("cosign_private_key")>
 COSIGN_PASSWORD: <+secrets.getValue("cosign_password")>
 ```
 
-![Build and Push Env](static/ci-tutorial-container-signing/go_pipeline_step_build_push_env_vars.png)
+![Build and Push Env](../static/ci-tutorial-container-signing/go_pipeline_step_build_push_env_vars.png)
 
 The step also exposes an [output variable](https://developer.harness.io/docs/continuous-delivery/cd-execution/cd-general-steps/download-and-copy-artifacts-using-the-command-step) called `IMAGE_REF` which could be used by other steps, for example to verify the signature by using pipeline expression `<+steps.build_and_push.output.outputVariables.IMAGE_REF>`.
 
@@ -144,7 +144,7 @@ The step also exposes an [output variable](https://developer.harness.io/docs/con
 
 5. Select __Apply Changes__ to save the step, and then select __Save__ to save the pipeline.
 
-![Final Pipeline](static/ci-tutorial-go-containers/go_pipeline_final.png)
+![Final Pipeline](../static/ci-tutorial-go-containers/go_pipeline_final.png)
 
 With those changes saved, you are ready to lint, test, build and push your __go__ application to container registry(DockerHub).
 
@@ -152,7 +152,7 @@ With those changes saved, you are ready to lint, test, build and push your __go_
 
 1. As you did earlier, select __Run__ from the pipeline editor window.
 
-![Run Pipeline](static/ci-tutorial-go-containers/run_pipeline.png)
+![Run Pipeline](../static/ci-tutorial-go-containers/run_pipeline.png)
 
 2. Leaving all the default entries in place, namely __Git Branch__ and __Branch Name__ to be _main_, select __Run Pipeline__ to start the pipeline run.
 
@@ -160,11 +160,11 @@ With those changes saved, you are ready to lint, test, build and push your __go_
 
 4. After the pipeline runs successfully, head back to Docker Hub to check the image references.
 
-![Success](static/ci-tutorial-container-signing/go_pipeline_success.png)
+![Success](../static/ci-tutorial-container-signing/go_pipeline_success.png)
 
 As you see the logs the container was built and the image reference is signed using our `$COSIGN_PRIVATE_KEY`.
 
-![Sign logs](static/ci-tutorial-container-signing/go_pipeline_sign_logs.png)
+![Sign logs](../static/ci-tutorial-container-signing/go_pipeline_sign_logs.png)
 
 ## Verify the signed image
 
